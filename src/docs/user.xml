@@ -2,7 +2,15 @@
   PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 <book>
-  <title>Documentation</title>
+  <bookinfo>
+    <title>Proxool</title>
+    <subtitle>User Guide</subtitle>
+    <abstract>
+      <para>
+The User Guide is aimed at people who want to use Proxool in their Java applications.
+      </para>
+    </abstract>
+  </bookinfo>
 
   <chapter id="quickstart">
     <title id="quickstart-title">Quick Start</title>
@@ -94,6 +102,22 @@ The URL Proxool should use to connect to the database. (The same one you were or
     </variablelist>
     <para>
 That's it really. You might want to consider other ways of <link linkend="configuration">configuring</link> Proxool.
+    </para>
+  </chapter>
+
+  <chapter id="documentation.howitworks">
+    <title id="documentation.howitworks-title">How it works</title>
+    <para>
+Proxool acts as a proxy. That is, when you ask it to do something it delegates that task to another JDBC driver (you can use whatever driver you like). This has an important benefit: you can switch from any JDBC driver to Proxool by simply making a few configuration changes. The standard life cycle of asking the DriverManager for a Connection and then closing that Connection when you have finished with it remains unchanged.
+    </para>
+    <programlisting>
+Class.forName("org.logicalcobwebs.proxool.ProxoolDriver");
+connection = DriverManager.getConnection(url);
+...
+connection.close();
+    </programlisting>
+    <para>
+When the ProxoolDriver gives you a Connection it actually gives you a ProxyConnection instead. The ProxyConnection does everything that a Connection does except that when you call the close() method it doesn't really close. Instead, it puts itself back into the pool.
     </para>
   </chapter>
 
@@ -260,22 +284,6 @@ Whether statistics are logged as they are produced. Range: DEBUG, INFO, WARN, ER
         </listitem>
       </varlistentry>
     </variablelist>
-  </chapter>
-
-  <chapter id="documentation.howitworks">
-    <title id="documentation.howitworks-title">How it works</title>
-    <para>
-Proxool acts as a proxy. That is, when you ask it to do something it delegates that task to another JDBC driver (you can use whatever driver you like). This has an important benefit: you can switch from any JDBC driver to Proxool by simply making a few configuration changes. The standard life cycle of asking the DriverManager for a Connection and then closing that Connection when you have finished with it remains unchanged.
-    </para>
-    <programlisting>
-Class.forName("org.logicalcobwebs.proxool.ProxoolDriver");
-connection = DriverManager.getConnection(url);
-...
-connection.close();
-    </programlisting>
-    <para>
-When the ProxoolDriver gives you a Connection it actually gives you a ProxyConnection instead. The ProxyConnection does everything that a Connection does except that when you call the close() method it doesn't really close. Instead, it puts itself back into the pool.
-    </para>
   </chapter>
 
   <chapter id="configuration">
@@ -642,90 +650,18 @@ This is an example output from the AdminServlet. See Admin for how to set this s
     </para>
     <mediaobject>
       <imageobject>
-        <imagedata fileref="adminservlet1.gif"/>
+        <imagedata fileref="images/adminservlet1.png"/>
       </imageobject>
-      <textobject>
-        <programlisting>
-18959269 -&gt; jdbc:hsqldb:db/test1
-6494378  -&gt; jdbc:hsqldb:db/test2
-        </programlisting>
-      </textobject>
-      <caption>
-        <para>
-Pools
-        </para>
-      </caption>
     </mediaobject>
     <mediaobject>
       <imageobject>
-        <imagedata fileref="adminservlet2.gif"/>
+        <imagedata fileref="images/adminservlet2.png"/>
       </imageobject>
-      <textobject>
-        <programlisting>
-URL                            jdbc:hsqldb:db/test2
-Driver                         org.hsqldb.jdbcDriver
-Connections                    5 (min), 10 (max)
-Prototyping                    off
-Connection Lifetime            04:00:00
-Maximum active timeFormat      00:05:00
-House keeping sleep timeFormat 30s
-House keeping test SQL         off
-Fatal SQL exceptions           off
-Statistics                     10s,5m
-        </programlisting>
-      </textobject>
-      <caption>
-        <para>
-Defintition for 6494378
-        </para>
-      </caption>
     </mediaobject>
     <mediaobject>
       <imageobject>
-        <imagedata fileref="adminservlet3.gif"/>
+        <imagedata fileref="images/adminservlet3.png"/>
       </imageobject>
-      <textobject>
-        <programlisting>
-Start date 31-Jan-2003 11:31:18
-Connections 2 (active), 3 (available), 10 (max)
-
-Served 25002
-Refused 0
-Details
-# born last
-start lap
-(ms)  thread
-1  11:31:24  11:32:30 1    test.insert.3
-2  11:31:28  11:32:30 1    test.insert.3
-3  11:31:28  11:32:30 1    test.insert.3
-4  11:31:28  11:32:30 0    test.insert.3
-5  11:31:28  11:32:30 2    test.teardown.0
-less information
-        </programlisting>
-      </textobject>
-      <caption>
-        <para>
-Snapshot at 11:34:46
-        </para>
-      </caption>
-    </mediaobject>
-    <mediaobject>
-      <imageobject>
-        <imagedata fileref="adminservlet4.gif"/>
-      </imageobject>
-      <textobject>
-        <programlisting>
-Served 98 (9.80/s)
-Refused 0 (0.00/s)
-Average active time 8ms
-Activity level 37%
-        </programlisting>
-      </textobject>
-      <caption>
-        <para>
-Statistics from 11:34:30 to 11:34:40
-        </para>
-      </caption>
     </mediaobject>
   </chapter>
 
@@ -762,7 +698,7 @@ Monitors the state of the pool so you can see whether it is quiet, busy, overloa
       </ulink>
     </bridgehead>
     <para>
-Listens to any changes made to the definition giving you the opportunity to persist a definition.
+Listens to any changes made to the <ulink url="http://proxool.sourceforge.net/api/org/logicalcobwebs/proxool/ConnectionPoolDefinitionIF.html">definition</ulink> giving you the opportunity to persist a definition.
     </para>
     <bridgehead renderas="sect2">
       <ulink url="http://proxool.sourceforge.net/api/org/logicalcobwebs/proxool/StatisticsListenerIF.html">
@@ -770,8 +706,118 @@ Listens to any changes made to the definition giving you the opportunity to pers
       </ulink>
     </bridgehead>
     <para>
-Listen for new statistics as they are produced.
+Listen for new <ulink url="http://proxool.sourceforge.net/api/org/logicalcobwebs/proxool/admin/StatisticsIF.html">statistics</ulink> as they are produced.
     </para>
   </chapter>
 
+  <chapter id="servlets">
+    <title id="sevlets-title">Setting up Proxool in a Servlet environment</title>
+
+    <section>
+      <title>Configuration with a servlet</title>
+
+      <para>
+You can configure Proxool using a Servlet too. There are three ways:
+      </para>
+      <orderedlist>
+        <listitem>
+          <para>
+XML file. Delegates to <ulink url="http://proxool.sourceforge.net/api/org/logicalcobwebs/proxool/configuration/JAXPConfigurator.html">JAXPConfigurator</ulink> passing in the filename. If the filename is not absolute then it is prepended with the application directory.
+          </para>
+          <programlisting>
+&lt;servlet&gt;
+  &lt;servlet-name&gt;ServletConfigurator&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;org.logicalcobwebs.proxool.configuration.ServletConfigurator&lt;/servlet-class&gt;
+  &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;xmlFile&lt;/param-name&gt;
+    &lt;param-value&gt;WEB-INF/proxool.xml&lt;/param-value&gt;
+  &lt;/init-param&gt;
+&lt;/servlet&gt;
+          </programlisting>
+        </listitem>
+        <listitem>
+          <para>
+Property file. Delegates to <ulink url="http://proxool.sourceforge.net/api/org/logicalcobwebs/proxool/configuration/PropertyConfigurator.html">PropertyConfigurator</ulink> passing in the filename. If the filename is not absolute then it is prepended with the application directory.
+          </para>
+          <programlisting>
+&lt;servlet&gt;
+  &lt;servlet-name&gt;ServletConfigurator&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;org.logicalcobwebs.proxool.configuration.ServletConfigurator&lt;/servlet-class&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;propertyFile&lt;/param-name&gt;
+    &lt;param-value&gt;WEB-INF/proxool.properties&lt;/param-value&gt;
+  &lt;/init-param&gt;
+&lt;/servlet&gt;
+          </programlisting>
+        </listitem>
+        <listitem>
+          <para>
+Init parameters. Delegates to <ulink url="http://proxool.sourceforge.net/api/org/logicalcobwebs/proxool/configuration/PropertyConfigurator.html">PropertyConfigurator</ulink> by passing in a new Properties object based on the servlet's init parameters.
+          </para>
+          <programlisting>
+&lt;servlet&gt;
+  &lt;servlet-name&gt;ServletConfigurator&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;org.logicalcobwebs.proxool.configuration.ServletConfigurator&lt;/servlet-class&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;jdbc-0.proxool.alias&lt;/param-name&gt;
+    &lt;param-value&gt;test&lt;/param-value&gt;
+  &lt;/init-param&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;jdbc-0.proxool.driver-url&lt;/param-name&gt;
+    &lt;param-value&gt;jdbc:hsqldb:.&lt;/param-value&gt;
+  &lt;/init-param&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;jdbc-0.proxool.driver-class&lt;/param-name&gt;
+    &lt;param-value&gt;org.hsqldb.jdbcDriver&lt;/param-value&gt;
+  &lt;/init-param&gt;
+&lt;/servlet&gt;
+          </programlisting>
+        </listitem>
+      </orderedlist>
+      <para>
+The ServletConfigurator also shuts down Proxool by removing all connection pools. If you want to disable this behaviour then use:
+      </para>
+      <programlisting>
+&lt;servlet&gt;
+  &lt;servlet-name&gt;ServletConfigurator&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;org.logicalcobwebs.proxool.configuration.ServletConfigurator&lt;/servlet-class&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;autoShutdown&lt;/param-name&gt;
+    &lt;param-value&gt;false&lt;/param-value&gt;
+  &lt;/init-param&gt;
+&lt;/servlet&gt;
+      </programlisting>
+    </section>
+    <section>
+      <title>Installing Proxool in your web application</title>
+      <para>
+If you run more than one web application in your servlet environment then you should consider where you install the Proxool JAR. There are two options:
+      </para>
+      <orderedlist>
+        <listitem>
+          <para>
+In the web application's lib directory (WEB-INF/lib). This has the following consequences:
+          </para>
+          <para>
+Proxool pools will not be shared across web applications.
+          </para>
+          <para>
+When you reload (or restart) your web application then a new instance of Proxool is started. Unless you explicitly shutdown the old one then it will continue running and continue to use resources (both locally and on the database). You can shutdown the pool by either using the ServletConfigurator, above, or calling <ulink url="http://proxool.sourceforge.net/api/org/logicalcobwebs/proxool/ProxoolFacade.html#shutdown(int)">ProxoolFacade.shutdown</ulink>.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+In the servlet container's common lib directory or elsewhere on the classpath. This has the following consequences:
+          </para>
+          <para>
+You can share common pools between web applications.
+          </para>
+          <para>
+When you reload your web application the pool keeps running. The only way to restart the pool is to either start and stop your servlet container or two explicitly shut it down and re-configure it.
+          </para>
+        </listitem>
+      </orderedlist>
+    </section>
+  </chapter>
 </book>
