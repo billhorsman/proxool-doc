@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<title>Untitled</title>
+	<style type="text/css">
+		.code {
+		  margin-top: 4px;
+		  margin-bottom: 4px;
+		  padding: 5px 5px 5px 5px;
+		  color: inherit;
+		  background-color: #eeeeee;
+		  border: 1px dotted #003366;
+		  font-family: courier, courier new, monospace;
+		  font-size: 12px;
+		  line-height: 100%;
+		  white-space: pre;
+		  width: 98%;
+		  overflow: auto;
+		  /*overflow: scroll -moz-scrollbars-horizontal;
+		  overflow-x: auto;*/
+		}
+		.xml-tag {
+		  color: #0000aa;
+		  background-color: inherit;
+		}
+		.xml-quote {
+		  color: #000000;
+		  background-color: inherit;
+		}
+	</style>
+</head>
+
+<body>
+<H1>Proxool DataSource support</H1>
+<P>
+	1. <A href="#intro">Introduction</A> <BR>
+	2. <A href="#about">About the DataSource</A>   <BR>
+	3. <A href="#deploy">DataSource deployment</A><BR>
+	4. <A href="#conf">ProxoolDataSource configuration</A><BR>
+	5. <A href="#examples">Configuration examples</A>  <BR> 
+	6. <A href="#resources">Resources</A>
+</P>
+<A name=intro></A>
+<H2>1. Introduction</H2>
+<P>    Community feedback suggests that JDBC DataSource support&nbsp;has been the
+most sorely missed feature amongst Proxool users. The JDBC JavaDoc documentation 
+also states that "the use of a DataSource object is the preferred means of connecting
+to a data source", so we have endeavoured to implement a
+simple DataSource implementation for Proxool.</P>
+<P><STRONG>Be warned</STRONG>:<BR>ProxoolDataSource is a simple DataSource 
+implementation. It does not currently implement PooledDataSource or support 
+distributed transactions. Also, it does not integrate directly with your
+container, so do not use ProxoolDataSource if you are using Container Manged 
+Persistance etc. unless your container explicitly allows you to swap to a third 
+party DataSource implementation.</P>
+<A name=about></A>
+<H2>2. About the DataSource</H2>
+<P>Like the <code>java.sql.DriverManager</code> the <code>javax.sql.DataSource</code> is a factory for 
+<code>java.sql.Connection</code> instances. The application must 
+include specific configuration information about the data source (e.g. a
+connection url) when obtaining 
+a connection from the <code>DriverManger</code>    
+             
+         . This 
+creates a somewhat explicit coupling between your application and the data source. </P>
+<P>A DataSource however is configured outside of your application and retrieved 
+through a naming service (JNDI). This makes the configuration of the DataSource 
+completely decoupled from your code. </P>
+<A name=deploy></A>
+<H2>3. DataSource deployment</H2>
+<P> DataSources are normally deployed within a Servlet or J2EE container. 
+The J2EE 1.4 specification recommends that the DataSources are placed in the 'jdbc'
+subcontext of the application component's JNDI environment
+(java:comp/env/). For example: the full JNDI name of a DataSource named 'UserDB'
+would be "java:comp/env/jdbc/UserDB". The specification also states that
+applications must declare the DataSources they are using in 'resource-ref'
+elements in their deployment descriptor. </P>
+<P>The java:comp/env/ environment is read-only at runtime, and the spec states 
+that the container vendor must "provide a deployment tool that allows the
+Deployer to set and modify the values of the application component's environment
+entries." This is where the spec ends and implementation specifics begin. </P>
+<P> Most containers come with their own DataSource 
+implementation that can be configured and deployed with a tool or through
+vendor specific configuration files. The support for plugging
+in a third party DataSource implementation like Proxool is extremely varied. Some 
+vendors have direct support for this, while others make it almost impossible 
+to deploy a foreign DataSource into the java:comp/env/jdbc/ namespace. Remember: 
+this is outside of the spec and there is no common way to achieve it. Because of this we have made the ProxoolDataSource
+configurable in a number of different ways. The next section describes 
+these ways.</P>
+
+<A name=conf></A>
+<H2>4. ProxoolDataSource configuration</H2>
+<P>We have made it possible to configure ProxoolDatasource 
+in three different ways to make it useful in as many deployment scenarios as 
+possible.</P>
+<A name=factory></A>
+<H3>ObjectFactory configuration</H3>
+<P>ProxoolDataSource implements the 
+javax.naming.spi.ObjectFactory interface. This is the standard way of providing 
+a factory for object implementations in JNDI. In such a scenario 
+ProxoolDatasource functions as a ObjectFactory for DataSource instances. It is a 
+practical way of deploying a ProxoolDataSource into the JNDI environment
+ for containers that supports this idiom. You configure the
+ProxoolDataSource ObjectFactory by handing it the Proxool <A 
+href="http://proxool.sourceforge.net/properties.html" 
+target=_blank>properties</A> plus properties for the underlying JDBC
+Driver. The Proxool properties must be prefixed with 'proxool.'. Properties not 
+prefixed with 'proxool.' will be passed on to the underlying JDBC driver ('delegate driver'
+in Proxool parlance).</P>
+<H3>JavaBean configuration</H3>
+<P>ProxoolDataSource exposes its configuration properties 
+as JavaBean getters and setters. This is useful for containers that offer the 
+posibility of configuring and deploying JavaBeans into the JNDI
+environment. It also makes it possible to deploy ProxoolDataSources through 
+component frameworks like the Spring Framework. Since a lot of the Proxool 
+propery names are illegal bean property names we have applied the following 
+translation: '-&lt;lower case letter&gt;' is translated to &lt;upper case 
+letter&gt;.  E.g.:<BR>
+'maximum-connection-count' becomes 'maximumConnectionCount'.</P>
+<P>All properties that are to be passed to the
+underlying JDBC driver are set with the 'driverProperties' property as a comma 
+separated property string. 
+E.g.:<BR>proxoolDataSource.setDriverProperties("user=testUser, 
+password=testPassword, loglevel=WARN");<BR>     
+             
+       
+          
+     </P>
+<H3>Self-deployed configuration</H3>
+<P>  In this scenario Proxool 
+itself instantiates ProxoolDataSources and binds them to JNDI names. This is the 
+least standard-conformant way of deploying a ProxoolDataSource. It is also the only way that 
+is garanteed to work in any setting as long as there is a writable JNDI
+name available for the Proxool process when it starts up. You configure Proxool 
+as you would when using it through the DriverManager. In addition you use the new 
+'jndi-name' configuration property to tell Proxool to wrap a pool in a 
+ProxoolDataSource and bind it to JNDI. In addition any properties you
+prefix with 'jndi-' will be passed on the JNDI InitialContext used to bind 
+Proxool. E.g:<BR>
+</P>
+<div class="code"><pre>
+
+<span class="xml-tag">&lt;proxool&gt;</span>
+    <span class="xml-tag">&lt;alias&gt;</span>jndi-test<span class="xml-tag">&lt;/alias&gt;</span>
+    <span class="xml-tag">&lt;driver-url&gt;</span>jdbc:hsqldb:.<span class="xml-tag">&lt;/driver-url&gt;</span>
+    <span class="xml-tag">&lt;driver-class&gt;</span>org.hsqldb.jdbcDriver<span class="xml-tag">&lt;/driver-class&gt;</span>
+    <span class="xml-tag">&lt;driver-class&gt;</span>org.hsqldb.jdbcDriver<span class="xml-tag">&lt;/driver-class&gt;</span>
+    <span class="xml-tag">&lt;driver-properties&gt;</span>
+        <span class="xml-tag">&lt;property name=<span class="xml-quote">"user"</span> value=<span class="xml-quote">"sa"</span>/&gt;</span>
+        <span class="xml-tag">&lt;property name=<span class="xml-quote">"password"</span> value=<span class="xml-quote">""</span>/&gt;</span>
+    <span class="xml-tag">&lt;/driver-properties&gt;</span>
+    <b><span class="xml-tag">&lt;jndi-name&gt;</span>/datasources/UserDB<span class="xml-tag">&lt;/jndi-name&gt;</span></b>
+    <b><span class="xml-tag">&lt;jndi-java.naming.factory.initial&gt;</span>com.caucho.naming.InitialContextFactoryImpl<span class="xml-tag">&lt;/jndi-java.naming.factory.initial&gt;</span></b>
+    <b><span class="xml-tag">&lt;jndi-java.naming.provider.url&gt;</span>localhost:1099<span class="xml-tag">&lt;/jndi-java.naming.provider.url&gt;</span></b>
+<span class="xml-tag">&lt;/proxool&gt;</span></pre></div>
+<P>Make sure that jndi-name is actually writable. Remember that the
+java:comp/env/ environment is read-only at runtime, so your ProxoolDataSources 
+need to go somewhere else in this configuration scenario.</P>
+<P>Also remember that with this configuration option Proxool 
+needs to be explicitly initialised, for example using the <A
+ 
+href="http://proxool.sourceforge.net/servlets.html" target=_blank>ServletConfigurator</A>.</P>
+<P></P>
+
+<A name=examples></A>
+<H2>5. Configuration examples</H2>
+<P>TODO</P>
+<H3>Resin 2.x</H3>
+<P>TODO</P>
+<H3>Resin 3.x</H3>
+<P>TODO</P>
+<H3>Tomcat 4.x</H3>
+<P>TODO</P>
+<H3>Tomcat 5.x</H3>
+<P>Configuration method: <A href="#factory">ObjectFactory</A> </P>
+<P>Configure a resource with ProxoolDataSource as the factory in server.xml: </P>
+<P>
+</P>
+
+<div class="code"><pre>
+
+<span class="xml-tag">&lt;Context path=<span class="xml-quote">"/dstest"</span>&gt;</span>
+    <span class="xml-tag">&lt;Resource name=<span class="xml-quote">"jdbc/ObjectFactoryDS"</span> auth=<span class="xml-quote">"Container"</span> type=<span class="xml-quote">"org.logicalcobwebs.proxool.ProxoolDataSource"</span> /&gt;</span>
+    <span class="xml-tag">&lt;ResourceParams name=<span class="xml-quote">"jdbc/ObjectFactoryDS"</span>&gt;</span>
+        <span class="xml-tag">&lt;parameter&gt;</span>
+            <span class="xml-tag">&lt;name&gt;</span>factory<span class="xml-tag">&lt;/name&gt;</span>
+            <span class="xml-tag">&lt;value&gt;</span>org.logicalcobwebs.proxool.ProxoolDataSource<span class="xml-tag">&lt;/value&gt;</span>
+        <span class="xml-tag">&lt;/parameter&gt;</span>
+        <span class="xml-tag">&lt;parameter&gt;</span>
+            <span class="xml-tag">&lt;name&gt;</span>proxool.alias<span class="xml-tag">&lt;/name&gt;</span>
+            <span class="xml-tag">&lt;value&gt;</span>ObjectFactoryDS<span class="xml-tag">&lt;/value&gt;</span>
+        <span class="xml-tag">&lt;/parameter&gt;</span>
+        <span class="xml-tag">&lt;parameter&gt;</span>
+            <span class="xml-tag">&lt;name&gt;</span>proxool.driver-url<span class="xml-tag">&lt;/name&gt;</span>
+            <span class="xml-tag">&lt;value&gt;</span>jdbc:mckoi://localhost/<span class="xml-tag">&lt;/value&gt;</span>
+        <span class="xml-tag">&lt;/parameter&gt;</span>
+        <span class="xml-tag">&lt;parameter&gt;</span>
+            <span class="xml-tag">&lt;name&gt;</span>proxool.driver-class<span class="xml-tag">&lt;/name&gt;</span>
+            <span class="xml-tag">&lt;value&gt;</span>com.mckoi.JDBCDriver<span class="xml-tag">&lt;/value&gt;</span>
+        <span class="xml-tag">&lt;/parameter&gt;</span>
+        <span class="xml-tag">&lt;parameter&gt;</span>
+            <span class="xml-tag">&lt;name&gt;</span>user<span class="xml-tag">&lt;/name&gt;</span>
+            <span class="xml-tag">&lt;value&gt;</span>admin<span class="xml-tag">&lt;/value&gt;</span>
+        <span class="xml-tag">&lt;/parameter&gt;</span>
+        <span class="xml-tag">&lt;parameter&gt;</span>
+            <span class="xml-tag">&lt;name&gt;</span>password<span class="xml-tag">&lt;/name&gt;</span>
+            <span class="xml-tag">&lt;value&gt;</span>admin<span class="xml-tag">&lt;/value&gt;</span>
+        <span class="xml-tag">&lt;/parameter&gt;</span>
+    <span class="xml-tag">&lt;/ResourceParams&gt;</span>
+<span class="xml-tag">&lt;/Context&gt;</span></pre></div>
+<P>&nbsp;</P>
+<P></P>
+<A name=resources></A>
+<H2>6. Resources</H2>
+<UL>
+  <LI>
+  J2SE 1.4.2
+  DataSource interface <A 
+  href="http://java.sun.com/j2se/1.4.2/docs/api/javax/sql/DataSource.html" 
+  target=_blank>JavaDoc</A>.
+  <LI>Chapter 9.4 "The DataSource Interface" of the <A 
+  href="http://java.sun.com/products/jdbc/download.html#corespec30" 
+  target=_blank>JDBC 3.0 specification</A>.
+  <LI>The Sun <A href="http://java.sun.com/products/jndi/tutorial/index.html" 
+  target=_blank>JNDI tutorial</A>.
+  <LI>Chapter 5.4 "Resource Manager Connection Factory 
+  References" of the <A href="http://java.sun.com/j2ee/j2ee-1_4-fr-spec.pdf" 
+  target=_blank>J2EE 1.4 specification</A>.
+  <LI>J2SE 1.4.2 ObjectFactory interface <A 
+  href="http://java.sun.com/j2se/1.4.2/docs/api/javax/naming/spi/ObjectFactory.html" 
+  target=_blank>JavaDoc</A>. 
+  <LI>The <A 
+  href="http://java.sun.com/j2se/1.4.2/docs/api/javax/naming/spi/ObjectFactory.html" 
+  target=_blank>Spring</A> Framework.</LI>
+  </UL>
+
+</body>
+</html>
