@@ -1,0 +1,101 @@
+body               {
+  background: white;
+  margin: 0;
+  padding: 0;
+  margin-top: 10px;
+  font-family: sans-serif;
+  color: black;
+
+                   }
+
+.navhomehead       { padding-top: 0; 
+                     margin-bottom: 0;
+                     padding-bottom: 0;
+                     font-size: 80%
+                   }
+
+.navhomehead           { color: black; }
+.navhomehead a:link    { color: black; }
+.navhomehead a:visited { color: black; }
+
+.navhead           { padding-top: 0; 
+                     margin-bottom: 0;
+                     padding-bottom: 0;
+                     font-size: 80%
+                   }
+
+.navhead           { color: black; }
+.navhead a:link    { color: black; }
+.navhead a:visited { color: black; }
+
+.navfoot           { color: black;
+                     font-size: 70%;
+                   }
+
+.navfoot a:link    { color: black; }
+.navfoot a:visited { color: black; }
+.navtoc {}
+pre.programlisting { font-size: 80%;
+                   }
+
+span.footdate      { color: black;
+                     font-size: 70%;
+                     font-family: Arial, sans-serif;
+                   }
+
+span.foothome      { color: black;
+                     font-size: 70%;
+                     font-family: Arial, sans-serif;
+                   }
+
+span.footfeed      { color: black;
+                     font-size: 70%;
+                     font-family: Arial, sans-serif;
+                   }
+
+span.footcopy      { color: black;
+                     font-size: 70%;
+                     font-family: Arial, sans-serif;
+                   }
+
+SPAN.curpage           { color: black;
+                         font-style: italic; }
+SPAN.curpage A         { color: black; }
+SPAN.curpage A:link    { color: black; }
+SPAN.curpage A:visited { color: black; }
+
+SPAN.toplevel A          { color: black; }
+SPAN.toplevel A:link     { color: black; }
+SPAN.toplevel A:visited  { color: black; }
+
+SPAN.otherpage           { color: black; }
+SPAN.otherpage A         { color: black; }
+SPAN.otherpage A:link    { color: black; }
+SPAN.otherpage A:visited { color: black; }
+
+SPAN.descendant A         { color: black; }
+SPAN.descendant A:link    { color: black; }
+SPAN.descendant A:visited { color: black; }
+
+SPAN.ancestor A         { color: black; }
+SPAN.ancestor A:link    { color: black; }
+SPAN.ancestor A:visited { color: black; }
+
+SPAN.shrink1           { font-size: 80%; }
+SPAN.shrink2           { font-size: 70%; }
+SPAN.shrink3           { font-size: 70%; }
+
+/*Non-docbook stuff*/
+span.titleCaption {
+    font-size: 110%;
+    font-weight: bold;
+}
+h3 {
+    text-align: center;
+    padding: 2px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-weight: bold;
+    border: 1px solid #cccccc;
+    background: #ffffc0;
+}
