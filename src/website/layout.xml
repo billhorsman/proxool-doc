@@ -1,0 +1,24 @@
+<!DOCTYPE layout PUBLIC "-//Norman Walsh//DTD Website Layout V2.4.0//EN"
+          "http://docbook.sourceforge.net/release/website/2.4.0/schema/dtd/layout.dtd">
+
+<layout>
+  <config param="homebanner-tabular" value="webimages/proxool.jpg"
+    altval="Home Banner"/>
+  <config param="banner-tabular"     value="webimages/proxool.jpg"
+    altval="Banner"/>
+
+
+  <style src="proxool.css" type="text/css"/>
+  <toc page="home.xml" filename="index.html">
+    <tocentry page="home.xml" filename="home.html"/>
+    <tocentry page="faq.xml" filename="faq.html"/>
+    <tocentry page="changes.xml" filename="changes.html"/>
+    <tocentry page="download.xml" filename="download.html"/>
+    <tocentry page="developers.xml" filename="developers.html">
+      <title>Developers' Guide</title>
+    </tocentry>
+    <tocentry page="user.xml" filename="user.html">
+      <title>Users' Guide</title>
+    </tocentry>
+  </toc>
+</layout>
