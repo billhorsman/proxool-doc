@@ -1,13 +1,16 @@
-<project name="wfengine-docs" default="compile" basedir=".">
+<project name="proxool-doc" default="generate.website" basedir=".">
 
   <!-- ======================== Configuration =========================== -->
   <property name="app.name"         value="proxool-docs"/>
   <property name="app.version"      value="X.X"/>
   <property name="src.home"         value="src"/>
   <property name="src.docs"         value="${src.home}/docs"/>
-  <property name="src.xslt"         value="${src.home}/xslt"/>
+  <property name="src.website"      value="${src.home}/website"/>
+  <property name="src.website.xslt" value="${src.home}/website/xslt"/>
   <property name="lib.home"         value="lib"/>
   <property name="build.home"       value="build"/>
+  <property name="build.web.src"    value="${build.home}/website-src"/>
+  <property name="build.website"    value="${build.home}/website"/>
 
   <property file="build.properties"/>
   <property name="xslt.forcefalse" value="false"/>
@@ -23,17 +26,35 @@
          location="${build.home}/docbook-dtd-${docbook.dtd.version}/docbookx.dtd"/>
   </xmlcatalog>
 
-
+  <xmlcatalog id="website">
+    <xmlcatalog refid="docbook"/>
+    <catalogpath>
+      <fileset
+        dir="${build.home}"
+        includes="catalog.xml"/>
+    </catalogpath>
+  </xmlcatalog>
 
   <!-- ======================== Target: Prepare ========================= -->
 
-  <target name="prepare"/>
-
-  <target name="sprepare"
+  <target name="prepare"
           description="Prepares the project build environment.">
+
 
     <!-- Make the build directory -->
     <mkdir dir="${build.home}"/>
+
+    <!-- Make the catalog file for website -->
+    <echo file="${build.home}/catalog.xml">
+      &lt;catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+      &lt;rewriteURI
+      uriStartString="http://docbook.sourceforge.net/release/xsl/current/"
+      rewritePrefix="docbook-xsl-${docbook.xsl.version}/"/>
+      &lt;rewriteURI
+      uriStartString="http://docbook.sourceforge.net/release/website/"
+      rewritePrefix="website-${website.version}/xsl/"/>
+      &lt;/catalog>
+    </echo>
 
     <!-- Unzip the Dobbook XSLT and DTD archives to the build director -->
     <unzip src="${lib.home}/docbook-xml-${docbook.dtd.version}.zip"
@@ -63,44 +84,72 @@
   <!-- ======================== Target: Generate ======================== -->
 
   <target name="generate"
-          depends="generate.docbook-html"
+          depends="generate.docbook-html, generate.website"
           description="Generates all documentation formats.">
 
 
   </target>
 
+  <!-- ================== Generate.Website dependencies =================== -->
+
+  <target name="generate.website-src" depends="validate"
+          description="Converts articles and books into webpages" >
+      <xslt basedir="${src.docs}"
+            style="${src.website.xslt}/website-src.xsl"
+            includes="*.xml"
+            extension=".xml"
+            destdir="${build.home}/website-src">
+            <xmlcatalog refid="docbook"/>
+            </xslt>
+
+  </target>
+
   <target name="generate.website-autolayout"
-      description="Generates the autolayout file used in the Website generation"
+          description="Generates the autolayout file used in the Website generation"
     >
-    <xslt basedir="${src.docs}"
-          in="${src.docs}/layout.xml"
-          out="${build.home}/website-xsl/autolayout.xml"
+    <copy todir="${build.web.src}" file="${src.website}/layout.xml"/>
+    <xslt basedir="${build.web.src}"
+          in="${build.web.src}/layout.xml"
+          out="${build.web.src}/autolayout.xml"
           style="${build.home}/website-${website.version}/xsl/autolayout.xsl">
           <xmlcatalog refid="docbook"/>
     </xslt>
-    <copy todir="${build.home}/website-xsl">
-      <fileset dir="${src.docs}">
-        <include name="**/*.xml"/>
-      </fileset>
-    </copy>
 
   </target>
 
-  <target name="generate.website" depends="generate.website-autolayout"
+  <!-- ======================= Target: Generate.Website  ======================= -->
+
+  <target name="generate.website" depends="generate.website-src, generate.website-autolayout"
       description="Generates the HTML website using the Website Tabular style"
       >
     <xslt
-        basedir="${build.home}/website-xsl"
-        style="${build.home}/website-${website.version}/xsl/chunk-tabular.xsl"
+        basedir="${build.web.src}"
+        style="${src.website.xslt}/website.xsl"
         includes="autolayout.xml"
-        destdir="${build.home}/website/html"
+        destdir="${build.website}"
         extension=".html"
         followsymlinks="false"
       >
+      <xmlcatalog refid="website"/>
     </xslt>
+    <copy todir="${build.website}">
+      <!-- documentation images -->
+      <fileset dir="${src.docs}">
+        <include name="images/**"/>
+      </fileset>
+      <!-- website-specific stuff -->
+      <fileset dir="${src.website}">
+        <include name="proxool.css"/>
+        <include name="webimages/**"/>
+      </fileset>
+      <!-- very helpful images which came with website -->
+      <fileset dir="${build.home}/website-${website.version}/example">
+        <include name="graphics/**"/>
+      </fileset>
+    </copy>
   </target>
 
-  <!-- ======================== Target: Generate ======================== -->
+  <!-- ================== Target: Generate.Docbook ================= -->
 
   <target name="generate.docbook-html"
           depends="validate"
