@@ -1,0 +1,126 @@
+<!DOCTYPE article
+  PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<article>
+  <title>Quick Start</title>
+    <para>
+This document describes how to invoke Proxool. It assumes that you're familiar with the Java language in general and the <ulink url="http://java.sun.com/products/jdbc/">JDBC</ulink> API in particular. Please visit Sun's JDBC web site for information about JDBC.
+    </para>
+    <para>
+Take the following steps to invoke Proxool:
+    </para>
+    <section id="quickstart.1">
+      <title id="quickstart.1-title">Load the Proxool driver</title>
+        <para>
+Make sure that the Proxool JAR file is available in the classpath of your Java Runtime Environment and load the Proxool JDBC Driver:
+        </para>
+        <programlisting>
+Class.forName("org.logicalcobwebs.proxool.ProxoolDriver");
+        </programlisting>
+    </section>
+    <section id="quickstart.2">
+      <title id="quickstart.2-title">Define the URL</title>
+        <para>
+Instantiate a String that represents the URL of the database you'd like to connect to. This URL is formatted as follows:
+        </para>
+        <programlisting>
+proxool.&lt;alias&gt;:&lt;delegate-class&gt;:&lt;delegate-url&gt;
+        </programlisting>
+        <para>
+where:
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term>&lt;alias&gt;</term>
+            <listitem>
+              <para>
+Unique name that identifies this pool.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>&lt;delegate-class&gt;</term>
+            <listitem>
+              <para>
+Identifies the class name of the JDBC driver you'd like to use.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>&lt;delegate-url&gt;</term>
+            <listitem>
+              <para>
+Identifies a URL that &lt;delegate-class&gt; accepts.
+              </para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+        <para>
+Example:
+        </para>
+        <programlisting>
+String url = "proxool.test:org.hsqldb.jdbcDriver:jdbc:hsqldb:test";
+        </programlisting>
+    </section>
+    <section id="quickstart.3">
+      <title id="quickstart.3-title">Get a database connection</title>
+        <programlisting>
+Connection connection = DriverManager.getConnection(url, conParams);
+        </programlisting>
+    </section>
+    <section id="quickstart.4">
+      <title id="quickstart.4-title">Use the connection</title>
+        <para>
+Do whatever it is you wanted to do with the connection.
+        </para>
+    </section>
+    <section id="quickstart.5">
+      <title id="quickstart.5-title">Close the connection</title>
+        <para>
+It's important to close the connection when you have finished with it. This makes it available for re-use in the pool.
+        </para>
+        <programlisting>
+connection.close();
+        </programlisting>
+    </section>
+    <section id="quickstart.all">
+      <title id="quickstart.all-title">The code in full</title>
+        <para>
+Putting all the parts togther (with some sensible exception handling):
+        </para>
+        <example>
+          <title>Quick Start Example</title>
+            <programlisting>
+Connection connection = null;
+final String driverName = "org.logicalcobwebs.proxool.ProxoolDriver";
+try {
+    Class.forName(driverName);
+
+    try {
+        connection = DriverManager.getConnection("proxool.test:org.hsqldb.jdbcDriver:jdbc:hsqldb:test");
+    } catch (SQLException e) {
+        LOG.error("Problem getting connection", e);
+    }
+
+    // Use connection here
+
+} catch (ClassNotFoundException e) {
+    // LOG is an instance of org.apache.commons.logging.Logs
+    LOG.error("Couldn't find " + driverName + " driver", e);
+} finally {
+    try {
+        // Check to see we actually got a connection before we
+        // attempt to close it.
+        if (connection != null) {
+            // This doesn't really close the connection. It just makes it
+            // available in the pool again.
+            connection.close();
+        }
+    } catch (SQLException e) {
+        LOG.error("Problem closing connection", e);
+    }
+}
+            </programlisting>
+        </example>
+    </section>
+</article>

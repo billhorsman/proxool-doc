@@ -1,0 +1,70 @@
+<!DOCTYPE article
+  PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<article>
+
+  <articleinfo>
+    <title> Download Proxool</title>
+    <abstract>
+      <para>
+        Information on where and how to download Proxool.
+      </para>
+    </abstract>
+  </articleinfo>
+
+  <bridgehead renderas="sect2">21-Feb-2003</bridgehead>
+  <para>
+There are three ways of getting Proxool:
+  </para>
+  <itemizedlist>
+
+    <listitem>
+      <para>
+Download the latest binary release. (For JDK1.3 and later)
+        <itemizedlist>
+          <listitem>
+            <para>
+<ulink url="http://prdownloads.sourceforge.net/proxool/proxool-0.7.tar.gz?download">proxool-0.7.tar.gz</ulink>, or
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+<ulink url="http://prdownloads.sourceforge.net/proxool/proxool-0.7.zip?download">proxool-0.7.zip</ulink>
+            </para>
+          </listitem>
+        </itemizedlist>
+Unpack the downloaded file and just add lib/proxool-0.7.jar to your classpath.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+Download the latest source release. (For JDK1.2 and later)
+        <itemizedlist>
+          <listitem>
+            <para>
+<ulink url="http://prdownloads.sourceforge.net/proxool/proxool-0.7-source.tar.gz?download">proxool-0.7-source.tar.gz</ulink>, or
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+<ulink url="http://prdownloads.sourceforge.net/proxool/proxool-0.7-source.zip?download">proxool-0.7-source.zip</ulink>
+            </para>
+          </listitem>
+        </itemizedlist>
+Unpack the downloaded file and follow these instructions.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+Checkout the code from CVS. This is only recommended if you want to work on the code yourself and want the very latest version. The code in CVS should always at least compile but it is by no means guaranteed to work and is possibly not tested.
+      </para>
+      <programlisting>
+cvs -d:pserver:anonymous@cvs.proxool.sourceforge.net:/cvsroot/proxool login
+
+cvs -z3 -d:pserver:anonymous@cvs.proxool.sourceforge.net:/cvsroot/proxool co proxool
+      </programlisting>
+    </listitem>
+  </itemizedlist>
+</article>

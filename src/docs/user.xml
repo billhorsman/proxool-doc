@@ -1,0 +1,493 @@
+<!DOCTYPE book
+  PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<book>
+  <title>Documentation</title>
+
+  <chapter id="documentation.howitworks">
+    <title id="documentation.howitworks-title">How it works</title>
+      <para>
+Proxool acts as a proxy. That is, when you ask it to do something it delegates that task to another JDBC driver (you can use whatever driver you like). This has an important benefit: you can switch from any JDBC driver to Proxool by simply making a few configuration changes. The standard life cycle of asking the DriverManager for a Connection and then closing that Connection when you have finished with it remains unchanged.
+      </para>
+      <programlisting>
+Class.forName("org.logicalcobwebs.proxool.ProxoolDriver");
+connection = DriverManager.getConnection(url);
+...
+connection.close();
+      </programlisting>
+      <para>
+When the ProxoolDriver gives you a Connection it actually gives you a ProxyConnection instead. The ProxyConnection does everything that a Connection does except that when you call the close() method it doesn't really close. Instead, it puts itself back into the pool.
+      </para>
+  </chapter>
+
+  <chapter id="documentation.configuration">
+    <title id="documentation.configuration-title">Configuration</title>
+      <para>
+You can configure Proxool in lots of ways.
+      </para>
+      <orderedlist>
+        <listitem>
+          <para>
+Passing a java.util.Properties object to the Driver when you request a Connection:
+          </para>
+          <programlisting>
+Properties info = new Properties();
+info.setProperty("proxool.maximum-connection-count", "20");
+info.setProperty("proxool.house-keeping-test-sql", "select CURRENT_DATE");
+info.setProperty("user", "sa");
+info.setProperty("password", "");
+String alias = "test";
+String driverClass = "org.hsqldb.jdbcDriver";
+String driverUrl = "jdbc:hsqldb:test";
+String url = "proxool." + alias + ":" + driverClass + ":" + driverUrl;
+connection = DriverManager.getConnection(url, info);
+          </programlisting>
+        </listitem>
+        <listitem>
+          <para>
+Using an XML file. For instance:
+          </para>
+          <programlisting>
+&lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+&lt;!-- the proxool configuration can be embedded within your own application's.
+Anything outside the "proxool" tag is ignored. --&gt;
+&lt;something-else-entirely&gt;
+  &lt;proxool&gt;
+    &lt;alias&gt;xml-test&lt;/alias&gt;
+    &lt;driver-url&gt;jdbc:hsqldb:.&lt;/driver-url&gt;
+    &lt;driver-class&gt;org.hsqldb.jdbcDriver&lt;/driver-class&gt;
+    &lt;driver-properties&gt;
+      &lt;property name="user" value="sa"/&gt;
+      &lt;property name="password" value=""/&gt;
+    &lt;/driver-properties&gt;
+    &lt;maximum-connection-count&gt;10&lt;/maximum-connection-count&gt;
+    &lt;house-keeping-test-sql&gt;select CURRENT_DATE&lt;/house-keeping-test-sql&gt;
+  &lt;/proxool&gt;
+&lt;/something-else-entirely&gt;
+          </programlisting>
+          <para>
+And then simply call the XML configurator (<ulink url="http://proxool.sourceforge.net/api/org/logicalcobwebs/proxool/configuration/JAXPConfigurator.html">JAXPConfigurator</ulink>) in your startup code:
+          </para>
+          <programlisting>
+JAXPConfigurator.configure("src/java-test/org/logicalcobwebs/proxool/configuration/test-no-ns.xml", false);
+          </programlisting>
+          <para>
+(the false means non-validating)
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+Using a properties (flat text) file. For instance
+          </para>
+          <programlisting>
+jdbc-0.proxool.alias=property-test
+jdbc-0.proxool.driver-url=jdbc:hsqldb:.
+jdbc-0.proxool.driver-class=org.hsqldb.jdbcDriver
+jdbc-0.user=sa
+jdbc-0.password=
+jdbc-0.proxool.maximum-connection-count=10
+jdbc-0.proxool.house-keeping-test-sql=select CURRENT_DATE
+          </programlisting>
+          <para>
+The first word (up to the first dot) must start with "jdbc", but it can be anything you like. Use unique names to identify each pool. Any property not starting with "jdbc" will be ignored. The properties prefixed with "proxool." will be used by Proxool while the properties that are not prefixed will be passed on to the delegate JDBC driver.
+          </para>
+          <para>
+And then simply call the property configurator (PropertyConfigurator) in your startup code:
+          </para>
+          <programlisting>
+PropertyConfigurator.configure("src/java-test/org/logicalcobwebs/proxool/configuration/test.properties");
+          </programlisting>
+        </listitem>
+        <listitem>
+          <para>
+Programmatically. For instance
+          </para>
+          <programlisting>
+Class.forName("org.logicalcobwebs.proxool.ProxoolDriver");
+Properties info = new Properties();
+info.setProperty("proxool.maximum-connection-count", "10");
+info.setProperty("proxool.house-keeping-test-sql", "select CURRENT_DATE");
+info.setProperty("user", "sa");
+info.setProperty("password", "");
+String alias = "test";
+String driverClass = "org.hsqldb.jdbcDriver";
+String driverUrl = "jdbc:hsqldb:test";
+String url = "proxool." + alias + ":" + driverClass + ":" + driverUrl;
+ProxoolFacade.registerConnectionPool(url, info);
+          </programlisting>
+        </listitem>
+      </orderedlist>
+      <para>
+This is the full list of all the properties:
+      </para>
+      <variablelist>
+        <varlistentry>
+          <term>
+            <varname>house-keeping-sleep-time</varname>
+          </term>
+          <listitem>
+            <para>
+How long the house keeping thread sleeps for (milliseconds). The house keeper is responsible for checking the state of all the connections and tests whether any need to be destroyed or created. <emphasis>Default is 30 seconds</emphasis>.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <varname>house-keeping-test-sql</varname>
+          </term>
+          <listitem>
+            <para>
+If the house keeping thread finds and idle connections it will test them with this SQL statement. It should be _very_ quick to execute. Something like checking the current date or something. If not defined then this test is omitted.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <varname>maximum-connection-count</varname>
+          </term>
+          <listitem>
+            <para>
+The maximum number of connections to the database. <emphasis>Default is 15</emphasis>.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <varname>maximum-connection-lifetime</varname>
+          </term>
+          <listitem>
+            <para>
+The maximum amount of time that a connection exists for before it is killed (milliseconds). <emphasis>Default is 4 hours</emphasis>.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <varname>maximum-new-connections</varname>
+          </term>
+          <listitem>
+            <para>
+This is the maximum number of connections we can be building at any one time. That is, the number of new connections that have been requested but aren't yet available for use. Because connections can be built using more than one thread (for instance, when they are built on demand) and it takes a finite time between deciding to build the connection and it becoming available we need some way of ensuring that a lot of threads don't all decide to build a connection at once. (We could solve this in a smarter way - and indeed we will one day) <emphasis>Default is 10</emphasis>.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <varname>minimum-connection-count</varname>
+          </term>
+          <listitem>
+            <para>
+The minimum number of connections we will keep open, regardless of whether anyone needs them or not. <emphasis>Default is 5</emphasis>.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <varname>recently-started-threshold</varname>
+          </term>
+          <listitem>
+            <para>
+This helps us determine whether the pool status is up, down or overloaded. As long as at least one connection was started within this threshold (milliseconds) or there are some spare connections available then we assume the pool is up. <emphasis>Default is 60 seconds</emphasis>.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <varname>overload-without-refusal-lifetime</varname>
+          </term>
+          <listitem>
+            <para>
+This helps us determine the pool status. If we have refused a connection within this threshold (milliseconds) then we are overloaded. <emphasis>Default is 60 seconds</emphasis>.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <varname>maximum-active-time</varname>
+          </term>
+          <listitem>
+            <para>
+If the housekeeper comes across a thread that has been active for longer than this then it will kill it. So make sure you set this to a number bigger than your slowest expected response! <emphasis>Default is 5 minutes</emphasis>.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <varname>verbose</varname>
+          </term>
+          <listitem>
+            <para>
+Either false (quiet) or true (loud). <emphasis>Default is false</emphasis>.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <varname>trace</varname>
+          </term>
+          <listitem>
+            <para>
+If true then each SQL call gets logged (DEBUG level) along with the execution time. You can also get this information by registering a ConnectionListener (see ProxoolFacade). <emphasis>Default is false</emphasis>.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <varname>fatal-sql-exception</varname>
+          </term>
+          <listitem>
+            <para>
+All SQLExceptions are caught and tested for containing this text fragment. If it matches than this connection is considered useless and it is discarded. Regardless of what happens the exception is always thrown again. This property behaves like a collection; you can set it more than once and each value is checked.
+           </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <varname>prototype-count</varname>
+          </term>
+          <listitem>
+            <para>
+If there are fewer than this number of connections available then we will build some more (assuming the maximum-connection-count is not exceeded). For example. Of we have 3 active connections and 2 available, but our prototype-count is 4 then it will attempt to build another 2. <emphasis>This differs from minimum-connection-count because it takes into account the number of active connections. minimum-connection-count is absolute and doesn't care how many are in use. prototype-count is the number of spare connections it strives to keep over and above the ones that are currently active. Default is 0</emphasis>.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+  </chapter>
+
+  <chapter id="documentation.morecontrol">
+    <title id="documentation.morecontrol-title">More Control</title>
+      <para>
+This provides some nice-to-have features that can't be provided by the implementation of java.sql.Driver. Like starting up a pool before you need a connection. And getting statistical information.
+      </para>
+      <para>
+You need to use this class wisely. It is obviously specfic to proxool so it will stop you switching to another driver. Consider isolating the code that calls this class so that you can easily remove it if you have to.
+      </para>
+      <section id="documentation.morecontrol.registration">
+        <title id="documentation.morecontrol.registration-title">Registration</title>
+          <para>
+This allows you to register a pool (and for it to start up some connections). You could of course choose to do this by just asking for a Connection and throwing it away.
+          </para>
+          <programlisting>
+ProxoolFacade.<ulink url="api/org/logicalcobwebs/proxool/ProxoolFacade.html#registerConnectionPool(java.lang.String, java.util.Properties)">registerConnectionPool</ulink>(url, info)
+          </programlisting>
+      </section>
+      <section id="documentation.morecontrol.information">
+        <title id="documentation.morecontrol.information-title">Information</title>
+          <para>
+These methods provide real-time information about how the pool is running
+          </para>
+          <programlisting>
+ProxoolFacade.<ulink url="api/org/logicalcobwebs/proxool/ProxoolFacade.html#getConnectionInfos(java.lang.String)">getConnectionInfos</ulink>(alias)
+ProxoolFacade.<ulink url="api/org/logicalcobwebs/proxool/ProxoolFacade.html#getConnectionPoolStatistics(java.lang.String)">getConnectionPoolStatistics</ulink>(alias) (more info)
+          </programlisting>
+      </section>
+      <section id="documentation.morecontrol.addinglisteners">
+        <title id="documentation.morecontrol.addinglisteners-title">Adding listeners</title>
+          <para>
+You can also register the following listeners:
+          </para>
+          <programlisting>
+ProxoolFacade.<ulink url="api/org/logicalcobwebs/proxool/ProxoolFacade.html#setConnectionListener(java.lang.String, org.logicalcobwebs.proxool.ConnectionListenerIF)">setConnectionListener</ulink>(alias, connectionListener)
+ProxoolFacade.<ulink url="api/org/logicalcobwebs/proxool/ProxoolFacade.html#setStateListener(java.lang.String, org.logicalcobwebs.proxool.StateListenerIF)">setStateListener</ulink>(alias, stateListener)
+ProxoolFacade.<ulink url="api/org/logicalcobwebs/proxool/ProxoolFacade.html#setConfigurationListener(java.lang.String, org.logicalcobwebs.proxool.ConfigurationListenerIF)">setConfigurationListener</ulink>(alias, configurationListener)
+          </programlisting>
+      </section>
+  </chapter>
+
+  <chapter id="documentation.statistics">
+    <title id="documentation.statistics-title">Statistics</title>
+      <para>
+The log outputs statistics in the following format:
+      </para>
+      <programlisting>
+[stats: 000056 -000044 (01/05/00)]
+      </programlisting>
+      <para>
+This means:
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para>
+We have served 56 connections so far
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+We have refused 44 connections (this element only appears if we have refused connections).
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+There is 1 connection active at the moment out of a total of 5.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+There are no offline connections.
+          </para>
+        </listitem>
+      </itemizedlist>
+      <para>
+You can also get the statistics using ProxoolFacade:
+      </para>
+      <programlisting>
+ConnectionPoolStatisticsIF cps = ProxoolFacade.getConnectionPoolStatistics(alias);
+long connectionsServedCount = cps.getConnectionsServedCount();
+long connectionsRefusedCount = cps.getConnectionsRefusedCount();
+int activeConnectionCount = cps.getActiveConnectionCount();
+int availableConnectionCount = cps.getAvailableConnectionCount();
+int offlineConnectionCount = cps.getOfflineConnectionCount();
+Date dateStarted = cps.getDateStarted();
+      </programlisting>
+  </chapter>
+
+  <chapter id="documentation.tips">
+    <title id="documentation.tips-title">Tips</title>
+      <section id="documentation.tips.existing">
+        <title id="documentation.tips.existing-title">Connecting to an existing pool</title>
+          <para>
+You can connect to an existing pool by using exactly the same url:
+          </para>
+          <programlisting>
+Properties info = new Properties();
+info.setProperty("proxool.maximum-connection-count", "20");
+info.setProperty("proxool.house-keeping-test-sql", "select CURRENT_DATE");
+info.setProperty("user", "sa");
+info.setProperty("password", "");
+String alias = "apple";
+String driverClass = "org.gjt.mm.mysql.Driver";
+String driver-url = "jdbc:mysql://localhost/test";
+String url = "proxool." + alias + ":" + driverClass + ":" + driverUrl;
+connection = DriverManager.getConnection(url, info);
+...
+connection = DriverManager.getConnection(<emphasis>url</emphasis>);
+          </programlisting>
+          <para>
+Note that it isn't necessary to include the properties when you reconnect. If you do send the properties object again then the definition is updated accordingly. It is an incremental update - only those properties you send are updated.
+          </para>
+      </section>
+      <section id="documentation.tips.alias">
+        <title id="documentation.tips.alias-title">Using an alias</title>
+          <para>
+To save having to use the whole url everytime you use the pool you can use the alias. The alias is after "proxool." and before the first ":".
+          </para>
+          <programlisting>
+String alias = "banana";
+String driverClass = "org.gjt.mm.mysql.Driver";
+String driver-url = "jdbc:mysql://localhost/test";
+String url = "proxool." + <emphasis>alias</emphasis> + ":" + driverClass + ":" + driverUrl;
+connection = DriverManager.getConnection(url, properties);
+...
+connection = DriverManager.getConnection("<emphasis>proxool." + alias</emphasis>);
+          </programlisting>
+          <para>
+This also allows you to create two different pools with the same url (for instance, two similar pools with different login details).
+          </para>
+      </section>
+  </chapter>
+
+  <chapter id="documentation.examples">
+    <title id="documentation.examples-title">Examples of using Proxool</title>
+      <para>
+Here are some examples to help you use Proxool.
+      </para>
+      <section id="documentation.examples.simple">
+        <title id="documentation.examples.simple-title">Simple Example</title>
+          <para>
+This is the simplest example. It is exactly the same as connecting to any JDBC driver. The only important line is the one that defines the URL:
+          </para>
+          <programlisting>
+<emphasis>connection = DriverManager.getConnection("proxool.test:org.hsqldb.jdbcDriver:jdbc:hsqldb:test");</emphasis>
+          </programlisting>
+          <para>
+The code in full:
+          </para>
+          <programlisting>
+Connection connection = null;
+try {
+
+  Class.forName("org.logicalcobwebs.proxool.ProxoolDriver");
+<emphasis>
+  String alias = "test";
+  String driverClass = ":org.hsqldb.jdbcDriver";
+  String driver-url = "jdbc:hsqldb:test";
+  String url = "proxool." + alias + ":" + driverClass + ":" + driverUrl;
+  connection = DriverManager.getConnection(url);
+</emphasis>
+  if (connection != null) {
+    System.out.println("Got connection :)");
+  }
+  else {
+    System.out.println("No connection :(");
+  }
+}
+catch (ClassNotFoundException e) {
+  e.printStackTrace();
+}
+catch (SQLException e) {
+  e.printStackTrace();
+}
+finally {
+  try {
+    if (connection != null) {
+      /* This doesn't really close the
+         connection. It just makes it
+         available sin the pool again. */
+      <emphasis>connection.close();</emphasis>
+    }
+  }
+  catch (SQLException e) {
+    e.printStackTrace();
+  }
+}
+          </programlisting>
+      </section>
+      <section id="documentation.examples.configuring">
+        <title id="documentation.examples.configuring-title">Configuring the pool</title>
+          <para>
+This example changes some of the default settings for the way the pool behaves.
+          </para>
+          <programlisting>
+Connection connection = null;
+try {
+
+  Class.forName("org.logicalcobwebs.proxool.ProxoolDriver");
+  <emphasis>Properties properties = new Properties();
+  properties.setProperty("proxool.maximum-connection-count", "20");
+  properties.setProperty("proxool.house-keeping-test-sql", "select CURRENT_DATE");
+  String alias = "test";
+  String driverClass = ":org.hsqldb.jdbcDriver";
+  String driver-url = "jdbc:hsqldb:test";
+  String url = "proxool." + alias + ":" + driverClass + ":" + driverUrl;
+  connection = DriverManager.getConnection(url, properties);</emphasis>
+
+  if (connection != null) {
+    System.out.println("Got connection :)");
+  }
+  else {
+    System.out.println("No connection :(");
+  }
+}
+catch (ClassNotFoundException e) {
+  e.printStackTrace();
+}
+catch (SQLException e) {
+  e.printStackTrace();
+}
+finally {
+  try {
+    if (connection != null) {
+      /* This doesn't really close the
+         connection. It just makes it
+         available in the pool again. */
+       connection.close();
+    }
+  }
+  catch (SQLException e) {
+    e.printStackTrace();
+  }
+}
+          </programlisting>
+      </section>
+  </chapter>
+</book>

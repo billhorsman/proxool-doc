@@ -1,0 +1,24 @@
+<!DOCTYPE article
+  PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<article>
+
+  <articleinfo>
+    <title>Proxool's credits</title>
+    <abstract>
+      <para>
+Individuals and companies that have contributed to Proxool.
+      </para>
+    </abstract>
+  </articleinfo>
+
+  <para>
+Proxool (before it was even known as Proxool) started off life as a connection pool for <ulink url="http://www.findexa.no/">Findexa</ulink> (formerly known as Telenor Media) back in early 2000. Findexa funded the development of it up to about May 2002.
+  </para>
+  <para>
+<ulink url="http://www.logicalcobwebs.co.uk/">Logical Cobwebs</ulink> now help to maintain Proxool and have moved it to SourceForge.
+  </para>
+  <para>
+People to credit: <ulink url="http://www.logicalcobwebs.co.uk/people/bill-biog1.html">Bill Horsman</ulink> (who wrote most of the original code and might be available for consulancy work), Christian Nedregard (for coding and strategic design), Lyndon Smith (for using it, providing useful feedback and bug fixes), Bas Cancrinus &amp; Alastair Calderwood from <ulink url="http://www.cipherware.com/">Cipherware</ulink> for their work on J2EE compliance, Martin Crawford for his suggestions and advice, and Del Simmons for testing.
+  </para>
+</article>

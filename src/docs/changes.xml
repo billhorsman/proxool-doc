@@ -1,0 +1,250 @@
+<!DOCTYPE article
+  PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<article>
+
+  <articleinfo>
+    <title>Changes to Proxool</title>
+    <abstract>
+      <para>
+History of the features and fixes to Proxool.
+      </para>
+    </abstract>
+  </articleinfo>
+
+  <bridgehead renderas="sect2">0.7 - February 21, 2003</bridgehead>
+  <itemizedlist>
+    <listitem>
+      <para>
+We have dropped the dependency on commons-logging.jar by copying the code into our own project (retaining credit to the Jakarta team, naturally).
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+New Admin package provides statistical and snapshot information so you can measure how well Proxool, and your database, is doing.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+New AdminServlet provides statistical information for your web application.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+The JDK 1.2 patch code has been brought up to date and now passes all the unit tests.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+The listener code has been redone. Proxool now allows multiple listeners per pool. setFooListener has now been deprecated in favour of addFooListener. And it's now thread safe (just in case you add or remove a listener while the pool is running).
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+The new ServletConfigurator will help you to configure and shutdown your pools simply by adding a few lines to your servlet configuration (web.xml) file and perhaps writing an XML file. No changes to your Java code.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+By using ShutdownHooks (with JDK1.3 or later) we get a cleaner, more reliable shutdown of the pools when the JVM stops.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Removed ReloadMonitor (added in 0.5) because it made use of SystemProperties and this is prohbited by J2SE. You are now responsible for ensuring Proxool is shutdown if your application is reloaded within the same environment (as can sometimes happen in a web application). See ProxoolFacade.shutdown().
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Fixed bug when you asked DatabaseMetaData for the connection. It now gives you back the Proxool connection, not the underlying delegate connection.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Fixed bug where if you registered, removed and then re-registered a pool then the new pool would not notice the Properties passed to it.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+If a connection encounters a fatal SQLException (as defined by the fatal-sql-exception property) it now wakes up the house keeper thread so other connections are tested as soon as possible (with the house-keeper-test-sql) rather than waiting for the next scheduled sweep.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <bridgehead renderas="sect2">0.6 - January 23, 2003</bridgehead>
+  <itemizedlist>
+    <listitem>
+      <para>
+ProxoolFacade API has changed slightly. Some of the methods no longer throw an SQLException but a ProxoolException instead. This might lead to some small changes in your code.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+There used to be some ambiguity about whether you referred to a pool by its alias or its full url (when using ProxoolFacade). This has now been fixed. This means you can now change the url (to use a different database for instance) without creating a new pool.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Version information is now logged so you can tell what version of Proxool you are using.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+ConnectionPoolStatisticsIF now reports the time the pool was started.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+We now use FastArrayList (from Jakarta Commons) instead of the JDK's Vector for improved collection support.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+New JAXPConfigurator and PropertyConfigurator to make it easy to configure proxool from a file.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+New ConfigurationListenerIF interface allows you to implement a persistent configuration.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Bug fix for JDBC drivers that implement the Statement interface indirectly (that is, extend a class that implements it rather than implementing it directly). (Credit to Martin Crawford).
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Unclosed Statements are now automatically closed when the Connection is closed, in accordance with the JDBC spec.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Rollback is called on all connections when they are closed (that is, returned to the pool). This has no effect if autoCommit it true (default) or any pending transactions have been committed or already rolled back. This will only have an effect if you currently close connections with pending transactions.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+ProxoolFacade's new getDelegateStatement allows you to get to the underlying JDBC Driver's original Statement if you really need to. (This isn't recommended unless you have no other choice).
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+You can now update the URL for a pool, not just the properties. See ProxoolFacade's updateConnectionPool.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <bridgehead renderas="sect2">0.5 - 3 December 2002</bridgehead>
+  <itemizedlist>
+    <listitem>
+      <para>
+Fix finalisation of old instances. If you deploy to some environments in a certain way then it is possible for the class to be reloaded without the finalize() method being called. This will result in spurious house keeping threads remaining. The new ReloadMonitor avoids this.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Various improvements to the logging to make it more informative and cleaner.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Checkstyle improvements. We now enforce variable names and line length. Javadoc enforcement to come soon.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Made the onBirth() method of ConnectionListenerIF interface failsafe. And removed obsolete cleanupClob() method (which was never called anyway).
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Removed redundant logFilename stuff from ConnectionPoolDefinition. All logging is handled by Jakarta Commons's Logging anyway.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Fix when removing pools that meant that when you tried to add them again Proxool thought it was a duplicate (credit to Dan Milstein).
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Improvements to the way Proxool detects changes to the pool definition when resending the Properties object when you get a connection. Now detects when it has changed which means that we don't do unnecessary configuration and log is improved (we now log properties as they are set or updated).
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Fix to the ProxyConnection within the equals() method that was causing identical conections to be incorrectly reported as unequal (which leads to problems when adding them to some collections).
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Improvements to test classes. Lots more tests.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Added support for resetting connection properties when it is returned to the pool (autoCommit, catalog, readOnly, transactionIsolation, typeMap and holdability). These properties are reset to the values when the connection was made everytime it is returned. (credit to Tim Morley)
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Connection.isClosed() now returns true when it is back in the pool.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+New trace property allows you to log each execution, the SQL, the parameters used, and the execution time (DEBUG level). Use proxool.trace=true property. You can also get this information if you register a ConnectionListenerIF (use ProxoolFacade's setConnectionListener() method). This won't effect performance if you're not listening or have trace off.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Prototyping is now off by default. To enable prototyping you need to set the proxool.prototype-count property to something sensible (like 5, for instance). [Prototyping is where spare connections are when the number of available connections approaches zero.]
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Fix for catching fatal SQL exceptions. This is a feature that throws away connections that encounter certain types of exception.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <bridgehead renderas="sect2">0.4 - 19 September 2002</bridgehead>
+  <itemizedlist>
+    <listitem>
+      <para>
+Rethink of how we organise our source code so that we can easily build to include different optional components.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Use the Jakarta Commons' ultra-thin log wrapper. This allows you to plugin whatever logging component you like.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Switched to use of the Proxy class so that we are not tied to a particular version of the JDK. However, this does mean a bit of patching to work with JDK 1.2 (Proxy was introduced in 1.3). Fortunately, this patch is handled easily using Ant.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Test classes now make use of Hypersonic. A pure Java database with a very small footprint. This means we can run the tests without having to rely on the existence of a separate database.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Layout and code style changes in accordance with CheckStyle
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+New XMLConfigurator using JAXP to configure your connection pools.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+Improvments in Junit testing.
+      </para>
+    </listitem>
+  </itemizedlist>
+</article>

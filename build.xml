@@ -1,0 +1,98 @@
+<project name="wfengine-docs" default="compile" basedir=".">
+
+  <!-- ======================== Configuration =========================== -->
+  <property name="app.name"         value="proxool-docs"/>
+  <property name="app.version"      value="X.X"/>
+  <property name="src.home"         value="src"/>
+  <property name="src.docs"         value="${src.home}/docs"/>
+  <property name="src.xslt"         value="${src.home}/xslt"/>
+  <property name="lib.home"         value="lib"/>
+  <property name="build.home"       value="build"/>
+
+  <property file="build.properties"/>
+  <property name="xslt.forcefalse" value="false"/>
+
+  <!-- ======================== DTD Configuration ======================= -->
+
+  <property name="docbook.dtd.version" value="4.2"/>
+  <property name="docbook.xsl.version" value="1.60.1"/>
+
+  <xmlcatalog id="docbook">
+    <dtd publicId="-//OASIS//DTD DocBook XML V${docbook.dtd.version}//EN"
+         location="${build.home}/docbook-dtd-${docbook.dtd.version}/docbookx.dtd"/>
+  </xmlcatalog>
+
+
+
+  <!-- ======================== Target: Prepare ========================= -->
+
+  <target name="prepare"
+          description="Prepares the project build environment.">
+
+    <!-- Make the build directory -->
+    <mkdir dir="${build.home}"/>
+
+    <!-- Unzip the Dobbook XSLT and DTD archives to the build director -->
+    <unzip src="${lib.home}/docbook-xml-${docbook.dtd.version}.zip"
+           dest="${build.home}/docbook-dtd-${docbook.dtd.version}"/>
+
+    <unzip src="${lib.home}/docbook-xsl-${docbook.xsl.version}.zip"
+           dest="${build.home}"/>
+  </target>
+
+  <!-- ======================== Target: Clean =========================== -->
+
+  <target name="clean"
+          description="Cleans the project build environment.">
+    <delete dir="${build.home}"/>
+  </target>
+
+  <!-- ======================== Target: Generate ======================== -->
+
+  <target name="generate"
+          depends="generate.docbook-html"
+          description="Generates all documentation formats.">
+
+
+  </target>
+
+  <!-- ======================== Target: Generate ======================== -->
+
+  <target name="generate.docbook-html"
+          depends="validate"
+          description="Generates HTML documentation using the standard DocBook stylesheet.">
+
+    <xslt basedir="${src.docs}"
+          includes="*.xml"
+          destdir="${build.home}/docbook-html"
+          extension=".html"
+          force="${xslt.force}"
+          style="${build.home}/docbook-xsl-${docbook.xsl.version}/html/docbook.xsl">
+          <xmlcatalog refid="docbook"/>
+    </xslt>
+
+    <copy todir="${build.home}/docbook-html">
+      <fileset dir="${src.docs}">
+        <exclude name="**/*.xml"/>
+      </fileset>
+    </copy>
+
+  </target>
+
+  <!-- ======================== Target: Validate ===================== -->
+
+  <target name="validate"
+          depends="prepare"
+          description="Checks the XML source to ensure that it is well-formed and valid.">
+
+    <!-- Validate the docbook files -->
+    <xmlvalidate>
+      <fileset dir="${src.docs}">
+        <include name="**/*.xml"/>
+      </fileset>
+      <xmlcatalog refid="docbook"/>
+    </xmlvalidate>
+
+  </target>
+
+</project>
