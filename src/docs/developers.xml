@@ -1,0 +1,111 @@
+<!DOCTYPE book
+  PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<book>
+  <bookinfo>
+    <title>Proxool</title>
+    <subtitle>Developers Guide</subtitle>
+    <abstract>
+      <para>
+The Developer Guide is aimed at people who are interested in finding how Proxool works and perhaps contributing to its development.
+      </para>
+    </abstract>
+  </bookinfo>
+
+  <chapter id="build">
+    <title id="build-title">Build Proxool from Source</title>
+    <abstract>
+      <para>
+How to build Proxool from the source code.
+      </para>
+    </abstract>
+
+    <section>
+      <title>Get the source</title>
+      <para>
+Get the source package or grab the latest code from CVS. See the download page.
+      </para>
+    </section>
+
+    <section>
+      <title>Get JDK</title>
+      <para>
+Get and install JDK1.2 or later. You can get one from various places but a good place to start is <ulink url="http://java.sun.com/j2se/">Sun</ulink>. Actually, we recommend getting at least JDK1.3 if it is available on your platform.
+      </para>
+    </section>
+
+    <section>
+      <title>Get Ant</title>
+      <para>
+You don't have to use Ant to build the source. But it's a lot easier if you do. You need to install Ant on your machine first and full instructions for doing that can be found on their <ulink url="http://ant.apache.org/">web site</ulink>. The build script has been tested against Ant version 1.5.
+      </para>
+    </section>
+
+    <section>
+      <title>Build</title>
+      <para>
+Move into the directory containing the build.xml file. Ant automatically looks for this file when you run it. The simplest way to build Proxool is to just run Ant with no arguments:
+      </para>
+      <programlisting>
+    ant
+      </programlisting>
+      <para>
+will build proxool.jar for use with whichever JDK you are running Ant with. You'll find it in the build directory.
+      </para>
+      <para>
+For more advanced options you need to pass some properties on the command line
+      </para>
+      <programlisting>
+    ant -Dproperty=value -Dproperty=value ...
+      </programlisting>
+      <table frame="all">
+      <title></title>
+      <tgroup cols="4">
+      <thead>
+        <row>
+          <entry>Property</entry>
+          <entry>Range</entry>
+          <entry>Default</entry>
+          <entry>Notes</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>build-dir</entry>
+          <entry>Any valid path; absolute or relative to the build.xml file.</entry>
+          <entry>build</entry>
+          <entry>Where to build the source to.</entry>
+        </row>
+        <row>
+          <entry>test</entry>
+          <entry>true, false</entry>
+          <entry>false</entry>
+          <entry>Whether to include the test classes.</entry>
+        </row>
+        <row>
+          <entry>debug</entry>
+          <entry>true, false</entry>
+          <entry>false</entry>
+          <entry>Whether you want debug information to be compiled. This is useful if you are reporting bugs but might have a slight impact on performance. (If it is true then any exceptions report the line number responsible.)</entry>
+        </row>
+      </tbody>
+      </tgroup>
+      </table>
+      <para>
+For example:
+      </para>
+      <programlisting>
+    ant
+      </programlisting>
+      <para>
+will build proxool.jar for use with JDK1.3 or later.
+      </para>
+      <programlisting>
+    ant -Ddebug=true build-jar
+      </programlisting>
+      <para>
+will build proxool.jar with debug information
+      </para>
+    </section>
+  </chapter>
+</book>
