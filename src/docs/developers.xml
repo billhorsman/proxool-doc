@@ -108,4 +108,103 @@ will build proxool.jar with debug information
       </para>
     </section>
   </chapter>
+
+  <chapter id="design">
+    <title id="design-test">Why we did what we did</title>
+    <abstract>
+      <para>
+ Why we made the design decisions we did.
+      </para>
+    </abstract>
+
+    <para>
+This isn't so much a design as a list of why we made the decisions we did. If you disagree with anything then feel free to let us know...
+    </para>
+    <bridgehead renderas="sect2">Logging</bridgehead>
+    <para>
+Goals: 1) not replicate the work that has gone into other logging projects, 2) make it fast, 3) make it pluggable so you're not tied to a particular solution.
+    </para>
+    <para>
+Solution: use Jakarta Common's ultra thin <ulink url="http://jakarta.apache.org/commons/logging.html">logger</ulink>. This will automatically log to Log4J or JDK 1.4's logger. If you want it to log somwehere else then you just need to write a simple wrapper.
+    </para>
+    <para>
+Good: it's already written, it's robust, it works.
+    </para>
+    <para>
+Bad: nothing really :) There isn't even a dependency since we imported the code into org.logicalcobwebs.logging. (We did this primarily to avoid having conflicts within the classpath. It would be nice to reference the distributed jar file, but it's so much cleaner this way.)
+    </para>
+    <bridgehead renderas="sect2">Proxy</bridgehead>
+    <para>
+To get transparent control when people close a connection we need to proxy the Connection object itself. This is easy enough to do: create an object called ProxyConnection which contains a real Connection and delegate everthing (except the close method) to the Connection. The trouble with this solution is that the API to the Connection object changes with each release of the JDK. This means you have to constantly update the proxy and deploy different versions for different JDKs. Not nice.
+    </para>
+    <para>
+JDK 1.3 introduces the Proxy class that does a lot of this delegation for you using reflection. This makes it really easy and means that when the API changes everything still works. Unfortunately, it won't work with JDK 1.2. So we have patched up some hand written proxies that work with JDK 1.2 only. They are contained within a different source tree to the main code. When you use Ant to build your jar (and you specify that you are targetting JDK 1.2) then it copies over these patched classes before compilation. This is not an ideal solution, but at least it should go away over time when we eventually drop support for JDK 1.2 (which we're not in a rush to do, by the way).
+    </para>
+    <para>
+Using reflection is slower. No doubt about it. Quick tests have shown that it might add 1 or 2 milliseconds to each database call. I suggest that this isn't really significant and that the ease of use and maintainability outweigh this slight delay.
+    </para>
+  </chapter>
+
+  <chapter id="tests">
+    <title id="tests-title">How to test Proxool</title>
+    <abstract>
+      <para>
+What testing we do, and how you can run the unit tests from the source code.
+      </para>
+    </abstract>
+
+    <para>
+We've written some unit tests so that we can automatically verify that everything is working okay.
+    </para>
+    <para>
+Click on the links below to see the JUnit report:
+    </para>
+    <para>
+<ulink url="http://proxool.sourceforge.net/reports/junit-cvs.html">CVS Snapshot</ulink>
+    </para>
+    <para>
+<ulink url="http://proxool.sourceforge.net/reports/junit-0.7.html">Version 0.7</ulink>
+    </para>
+    <para>
+You can run them too if you like.
+    </para>
+    <para>
+First, you have to download the source code. See the <ulink url="http://proxool.sourceforge.net/download.html">download</ulink> page.
+    </para>
+    <para>
+From the top level directory in the unpacked source (the one containing the build.xml file) run the following target:
+    </para>
+    <programlisting>
+    ant test
+    </programlisting>
+    <para>
+This will run the <ulink url="http://www.junit.org/index.htm">JUnit</ulink> Test Suite found in <ulink url="http://proxool.sourceforge.net/api-dev/org/logicalcobwebs/proxool/GlobalTest.html#suite()">GlobalTest</ulink>.
+    </para>
+    <programlisting>
+    java -classpath log4j.jar:crimson.jar org.apache.log4j.chainsaw.Main
+    </programlisting>
+    <para>
+(Use the correct paths for the classpath, obviously. And you can substitute any JAXP compliant XMLparser for crimson.jar.)
+    </para>
+    <para>
+And then pass Ant the log4jPath property. For example:
+    </para>
+    <programlisting>
+    ant -log4jPath=src/java-test/org/logicalcobwebs/proxool/log4j-chainsaw.xml
+    </programlisting>
+
+  </chapter>
+
+  <chapter id="mailinglist">
+    <title id="mailinglist-title">Developer Mailing List</title>
+    <para>
+There is a developer mailing list for discussion about how Proxool works. It's open to anyone, not just developers.
+    </para>
+    <para>
+<ulink url="http://lists.sourceforge.net/lists/listinfo/proxool-developer">Proxool Developer</ulink>
+    </para>
+    <para>
+There's an <ulink url="http://sourceforge.net/mailarchive/forum.php?forum_id=15340">archive</ulink> too.
+    </para>
+  </chapter>
 </book>
