@@ -1,16 +1,12 @@
 <!DOCTYPE article
   PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
-<article>
+<webpage id="faq">
 
-  <articleinfo>
-    <title>Frequently Asked Questions</title>
-    <abstract>
-      <para>
-A collection of commonly asked questions about Proxool.
-      </para>
-    </abstract>
-  </articleinfo>
+    <head>
+        <title>FAQ</title>
+        <summary>Site Navigation Layout Setup</summary>
+    </head>
 
   <qandaset defaultlabel='qanda'>
 
@@ -144,4 +140,4 @@ We support JDK1.2 by replacing some core classes with patched versions that are 
     </qandaentry>
 
   </qandaset>
-</article>
+</webpage>

@@ -37,13 +37,19 @@
 
     <!-- Unzip the Dobbook XSLT and DTD archives to the build director -->
     <unzip src="${lib.home}/docbook-xml-${docbook.dtd.version}.zip"
-           dest="${build.home}/docbook-dtd-${docbook.dtd.version}"/>
+           dest="${build.home}/docbook-dtd-${docbook.dtd.version}"
+            overwrite="false"
+        />
 
     <unzip src="${lib.home}/docbook-xsl-${docbook.xsl.version}.zip"
-           dest="${build.home}"/>
+           dest="${build.home}"
+        overwrite="false"
+        />
 
     <unzip src="${lib.home}/website-${website.version}.zip"
-      dest="${build.home}"/>
+      dest="${build.home}"
+        overwrite="false"
+        />
 
   </target>
 
@@ -85,8 +91,8 @@
       >
     <xslt
         basedir="${build.home}/website-xsl"
-        style="${build.home}/website-${website.version}/xsl/tabular.xsl"
-        excludes="autolayout.xml"
+        style="${build.home}/website-${website.version}/xsl/chunk-tabular.xsl"
+        includes="autolayout.xml"
         destdir="${build.home}/website/html"
         extension=".html"
         followsymlinks="false"

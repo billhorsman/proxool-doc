@@ -1,16 +1,11 @@
 <!DOCTYPE article
   PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
-<article id="home">
-
-    <articleinfo>
-        <title>Proxool - a Java JDBC connection pool</title>
-        <abstract>
-            <para>
-                The Proxool web site home page.
-            </para>
-        </abstract>
-    </articleinfo>
+<webpage id="home">
+    <head>
+        <title>Site Layout</title>
+        <summary>Site Navigation Layout Setup</summary>
+    </head>
 
 
     <bridgehead renderas="sect2">Features</bridgehead>
@@ -101,8 +96,4 @@
         If you are using Proxool then let us know in this forum.
     </para>
 
-    <index>
-        <title>hello</title>
-    </index>
-
-</article>
+</webpage>
