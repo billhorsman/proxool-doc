@@ -1,24 +1,26 @@
 <!DOCTYPE article
   PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
-<webpage id="faq">
+<article>
 
-    <head>
-        <title>FAQ</title>
-        <summary>Site Navigation Layout Setup</summary>
-    </head>
+  <articleinfo>
+    <title>FAQ</title>
+    <abstract>
+      <para>Site Navigation Layout Setup</para>
+    </abstract>
+  </articleinfo>
 
   <qandaset defaultlabel='qanda'>
 
     <qandaentry>
       <question>
         <para>
-What makes Proxool so different from all the other database pools out there.
+          What makes Proxool so different from all the other database pools out there.
         </para>
       </question>
       <answer>
         <para>
-Proxool makes it very easy to add pooling to your existing driver. It is very easy to configure and also gives some useful features like tracing of database calls, performance reporting and real time statistical reporting. It adheres closely to standards (full J2EE compliance is coming soon).
+          Proxool makes it very easy to add pooling to your existing driver. It is very easy to configure and also gives some useful features like tracing of database calls, performance reporting and real time statistical reporting. It adheres closely to standards (full J2EE compliance is coming soon).
         </para>
       </answer>
     </qandaentry>
@@ -26,12 +28,12 @@ Proxool makes it very easy to add pooling to your existing driver. It is very ea
     <qandaentry>
       <question>
         <para>
-When I run Ant I get an error: "The &lt;checkstyle&gt; task doesn't support the nested "property" element."
+          When I run Ant I get an error: "The &lt;checkstyle&gt; task doesn't support the nested "property" element."
         </para>
       </question>
       <answer>
         <para>
-Checkstyle changed the way it is configured between versions 2.2 and 2.4. You need to use 2.4 or later (not sure about 2.3). Proxool includes checkstyle in the lib directory but if you have an older version of checkstyle somewhere on your classpath (for instance, in Ant's own lib directory) then you might have problems. Suggested work around: get rid of the old version of checkstyle (if that doesn't break anything else); edit the build.xml so it works with the old format.
+          Checkstyle changed the way it is configured between versions 2.2 and 2.4. You need to use 2.4 or later (not sure about 2.3). Proxool includes checkstyle in the lib directory but if you have an older version of checkstyle somewhere on your classpath (for instance, in Ant's own lib directory) then you might have problems. Suggested work around: get rid of the old version of checkstyle (if that doesn't break anything else); edit the build.xml so it works with the old format.
         </para>
       </answer>
     </qandaentry>
@@ -39,12 +41,12 @@ Checkstyle changed the way it is configured between versions 2.2 and 2.4. You ne
     <qandaentry>
       <question>
         <para>
-Why is all the logging done to stdout.
+          Why is all the logging done to stdout.
         </para>
       </question>
       <answer>
         <para>
-This is the default behaviour for the logging system. We use Jakarta's Commons' <ulink url="http://jakarta.apache.org/commons/logging.html">Logging</ulink> component. If you want it to do anything other than log to stdout then you need to configure it.
+          This is the default behaviour for the logging system. We use Jakarta's Commons' <ulink url="http://jakarta.apache.org/commons/logging.html">Logging</ulink> component. If you want it to do anything other than log to stdout then you need to configure it.
         </para>
       </answer>
     </qandaentry>
@@ -52,21 +54,21 @@ This is the default behaviour for the logging system. We use Jakarta's Commons' 
     <qandaentry>
       <question>
         <para>
-I am using the Xyz JDBC Driver and I'm asking the Connection for a Statement and then trying to cast it into XyzStatement, but I get a ClassCastException.
+          I am using the Xyz JDBC Driver and I'm asking the Connection for a Statement and then trying to cast it into XyzStatement, but I get a ClassCastException.
         </para>
       </question>
       <answer>
         <para>
-When you ask Proxool for a Statement it gives you a ProxoolStatement and that asks (delegates) to the one provided by your Xyz driver so casting it just isn't going to work. There are two options:
+          When you ask Proxool for a Statement it gives you a ProxoolStatement and that asks (delegates) to the one provided by your Xyz driver so casting it just isn't going to work. There are two options:
           <orderedlist>
             <listitem>
               <para>
-Consider not using driver specific code. It might be that there is another way of doing what you're trying to do. It might be worthwhile making a little extra effort to solve it using standard JDBC calls.
+                Consider not using driver specific code. It might be that there is another way of doing what you're trying to do. It might be worthwhile making a little extra effort to solve it using standard JDBC calls.
               </para>
             </listitem>
             <listitem>
               <para>
-If you really have to make driver specific calls then you can use <ulink url="http://proxool.sourceforge.net/api/org/logicalcobwebs/proxool/ProxoolFacade.html#getDelegateStatement(java.sql.Statement)">ProxoolFacade.getDelegateStatement</ulink> to get the original one.
+                If you really have to make driver specific calls then you can use <ulink url="http://proxool.sourceforge.net/api/org/logicalcobwebs/proxool/ProxoolFacade.html#getDelegateStatement(java.sql.Statement)">ProxoolFacade.getDelegateStatement</ulink> to get the original one.
               </para>
             </listitem>
           </orderedlist>
@@ -77,12 +79,12 @@ If you really have to make driver specific calls then you can use <ulink url="ht
     <qandaentry>
       <question>
         <para>
-I'm running Intellij IDEA and I get an error when I try to build the javadoc using Ant.
+          I'm running Intellij IDEA and I get an error when I try to build the javadoc using Ant.
         </para>
       </question>
       <answer>
         <para>
-Intellij started shipping there own JRE just before they released version 3.0. This JRE includes javac but not javadoc. The solution is to copy javadoc from a full JDK (preferably a similar version to the one shipped with IDEA) into the JRE's bin directory.
+          Intellij started shipping there own JRE just before they released version 3.0. This JRE includes javac but not javadoc. The solution is to copy javadoc from a full JDK (preferably a similar version to the one shipped with IDEA) into the JRE's bin directory.
         </para>
       </answer>
     </qandaentry>
@@ -90,12 +92,12 @@ Intellij started shipping there own JRE just before they released version 3.0. T
     <qandaentry>
       <question>
         <para>
-When I run the tests I get an SQLException: "The database is already in use by another process".
+          When I run the tests I get an SQLException: "The database is already in use by another process".
         </para>
       </question>
       <answer>
         <para>
-This is a message from Hypersonic, the Java database we use for testing. It could either mean you are running two instances of the test or that you don't have permission to create the database on the file system (Hypersonic will try and save files to the Proxool directory).
+          This is a message from Hypersonic, the Java database we use for testing. It could either mean you are running two instances of the test or that you don't have permission to create the database on the file system (Hypersonic will try and save files to the Proxool directory).
         </para>
       </answer>
     </qandaentry>
@@ -103,12 +105,12 @@ This is a message from Hypersonic, the Java database we use for testing. It coul
     <qandaentry>
       <question>
         <para>
-I have loaded the source files into my favourite IDE but when I try to compile them I get a error in Jdk14Logger saying something like "cannot resolve symbol class Logger".
+          I have loaded the source files into my favourite IDE but when I try to compile them I get a error in Jdk14Logger saying something like "cannot resolve symbol class Logger".
         </para>
       </question>
       <answer>
         <para>
-The Jdk14Logger class only works with JDK1.4. When you build using the Ant script it will automatically exclude this file if the JDK is less than 1.4. You can either choose to just build using Ant or you could manually delete the file and continue to use your IDE. The Jdk14Logger class is not required - it just gives you the option of using JDK1.4's logging feature if it is available.
+          The Jdk14Logger class only works with JDK1.4. When you build using the Ant script it will automatically exclude this file if the JDK is less than 1.4. You can either choose to just build using Ant or you could manually delete the file and continue to use your IDE. The Jdk14Logger class is not required - it just gives you the option of using JDK1.4's logging feature if it is available.
         </para>
       </answer>
     </qandaentry>
@@ -116,12 +118,12 @@ The Jdk14Logger class only works with JDK1.4. When you build using the Ant scrip
     <qandaentry>
       <question>
         <para>
-I have loaded the source files into my favourite IDE but when I try to compile them I get lots of errors saying something like "duplicate class...".
+          I have loaded the source files into my favourite IDE but when I try to compile them I get lots of errors saying something like "duplicate class...".
         </para>
       </question>
       <answer>
         <para>
-The source distribution includes the patched files for JDK1.2. If you are using JDK1.3 or later then simply remove src/java-jdk1.2 from your source path.
+          The source distribution includes the patched files for JDK1.2. If you are using JDK1.3 or later then simply remove src/java-jdk1.2 from your source path.
         </para>
       </answer>
     </qandaentry>
@@ -129,15 +131,15 @@ The source distribution includes the patched files for JDK1.2. If you are using 
     <qandaentry>
       <question>
         <para>
-You say you support JDK1.2 but when I try to compile I get loads of errors..
+          You say you support JDK1.2 but when I try to compile I get loads of errors..
         </para>
       </question>
       <answer>
         <para>
-We support JDK1.2 by replacing some core classes with patched versions that are compatible with JDK1.2. These classes are all in src/java-jdk1.2. When you build with the Ant script it automatically uses these patched versions if necessary. You can either just build using Ant or you could mess around and overwrite the files found in src/java with the ones in src/java-jdk1.2 if you really want.
+          We support JDK1.2 by replacing some core classes with patched versions that are compatible with JDK1.2. These classes are all in src/java-jdk1.2. When you build with the Ant script it automatically uses these patched versions if necessary. You can either just build using Ant or you could mess around and overwrite the files found in src/java with the ones in src/java-jdk1.2 if you really want.
         </para>
       </answer>
     </qandaentry>
 
   </qandaset>
-</webpage>
+</article>

@@ -1,99 +1,101 @@
 <!DOCTYPE article
   PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
     "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
-<webpage id="home">
-    <head>
-        <title>Site Layout</title>
-        <summary>Site Navigation Layout Setup</summary>
-    </head>
+<article>
+  <articleinfo>
+    <title>Home</title>
+    <abstract>
+      <para>Proxool main page</para>
+    </abstract>
+  </articleinfo>
 
 
-    <bridgehead renderas="sect2">Features</bridgehead>
-    <itemizedlist>
-        <listitem>
-            <para>
-                <emphasis>Transparency</emphasis>: Transparently adds connection pooling to your existing JDBC driver.
-            </para>
-        </listitem>
-        <listitem>
-            <para>
-                <emphasis>Open Source</emphasis>: Our licence allows you flexibility to use it in both commerical and other open source products.
-            </para>
-        </listitem>
-        <listitem>
-            <para>
-                <emphasis>Standards</emphasis>: Complies with the J2SE API, giving you the confidence to develop to standards.
-            </para>
-        </listitem>
-        <listitem>
-            <para>
-                <emphasis>Control</emphasis>: You can monitor the performance of your database connections and listen to connection events
-            </para>
-        </listitem>
-        <listitem>
-            <para>
-                <emphasis>Ease of use</emphasis>: It's easy to configure using the JDBC API, XML, or Java property files - you decide.
-            </para>
-        </listitem>
-    </itemizedlist>
+  <bridgehead renderas="sect2">Features</bridgehead>
+  <itemizedlist>
+    <listitem>
+      <para>
+        <emphasis>Transparency</emphasis>: Transparently adds connection pooling to your existing JDBC driver.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <emphasis>Open Source</emphasis>: Our licence allows you flexibility to use it in both commerical and other open source products.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <emphasis>Standards</emphasis>: Complies with the J2SE API, giving you the confidence to develop to standards.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <emphasis>Control</emphasis>: You can monitor the performance of your database connections and listen to connection events
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <emphasis>Ease of use</emphasis>: It's easy to configure using the JDBC API, XML, or Java property files - you decide.
+      </para>
+    </listitem>
+  </itemizedlist>
 
-    <bridgehead renderas="sect2">News</bridgehead>
+  <bridgehead renderas="sect2">News</bridgehead>
 
-    <itemizedlist>
-        <listitem>
-            <para>
-                <emphasis>21 February 2003</emphasis> - Version 0.7 is now available. Lots of changes: new AdminServlet, and full JDK 1.2 support again. See change log for details.
-            </para>
-        </listitem>
-        <listitem>
-            <para>
-                <emphasis>23 January 2003</emphasis> - Version 0.6 is now available. Now with easier configuration. See change log for details.
-            </para>
-        </listitem>
-        <listitem>
-            <para>
-                <emphasis>19 September 2002</emphasis> - Proxool is now fully compatable with JDK 1.4 (and retains compatability with 1.2 and 1.3). And we've improved the source code distribution to include an Ant script to make it as simple as possible to use.
-            </para>
-        </listitem>
-    </itemizedlist>
+  <itemizedlist>
+    <listitem>
+      <para>
+        <emphasis>21 February 2003</emphasis> - Version 0.7 is now available. Lots of changes: new AdminServlet, and full JDK 1.2 support again. See change log for details.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <emphasis>23 January 2003</emphasis> - Version 0.6 is now available. Now with easier configuration. See change log for details.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <emphasis>19 September 2002</emphasis> - Proxool is now fully compatable with JDK 1.4 (and retains compatability with 1.2 and 1.3). And we've improved the source code distribution to include an Ant script to make it as simple as possible to use.
+      </para>
+    </listitem>
+  </itemizedlist>
 
-    <bridgehead renderas="sect2">Which JDK?</bridgehead>
-    <para>
-        Proxool is fully compatible with JDK1.3 and JDK1.4.
-    </para>
-    <para>
-        We rely on the Proxy classes within JDK 1.3 for some of our core functionality but we have written some patches that allow Proxool to work with JDK1.2 as well. If you are using JDK1.2 you have to build Proxool from the source.
-    </para>
-    <para>
-        This patch comes at the price of maintainability and we have no intention of continuing development of the JDK 1.2 patch beyond version 1.0. A branch of 1.0 will continue for bug fixing only.
-    </para>
+  <bridgehead renderas="sect2">Which JDK?</bridgehead>
+  <para>
+    Proxool is fully compatible with JDK1.3 and JDK1.4.
+  </para>
+  <para>
+    We rely on the Proxy classes within JDK 1.3 for some of our core functionality but we have written some patches that allow Proxool to work with JDK1.2 as well. If you are using JDK1.2 you have to build Proxool from the source.
+  </para>
+  <para>
+    This patch comes at the price of maintainability and we have no intention of continuing development of the JDK 1.2 patch beyond version 1.0. A branch of 1.0 will continue for bug fixing only.
+  </para>
 
-    <bridgehead renderas="sect2">Proxool in the wild</bridgehead>
+  <bridgehead renderas="sect2">Proxool in the wild</bridgehead>
 
-    <itemizedlist>
-        <listitem>
-            <para>
-                <ulink url="http://www.gulesider.no/">Gule Sider</ulink>: Norway's Yellow Pages (telephone listings).
-            </para>
-        </listitem>
-        <listitem>
-            <para>
-                <ulink url="http://www.ecelebrations.com/">Ecelebrations</ulink>: Electronic greeting cards
-            </para>
-        </listitem>
-        <listitem>
-            <para>
-                <ulink url="http://www.agentprovocateur.com/ap/">Agent Provocateur</ulink>: Lingerie
-            </para>
-        </listitem>
-        <listitem>
-            <para>
-                <ulink url="http://www.perfect-coffee.com/">Perfect Coffee</ulink>: Coffee
-            </para>
-        </listitem>
-    </itemizedlist>
-    <para>
-        If you are using Proxool then let us know in this forum.
-    </para>
+  <itemizedlist>
+    <listitem>
+      <para>
+        <ulink url="http://www.gulesider.no/">Gule Sider</ulink>: Norway's Yellow Pages (telephone listings).
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <ulink url="http://www.ecelebrations.com/">Ecelebrations</ulink>: Electronic greeting cards
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <ulink url="http://www.agentprovocateur.com/ap/">Agent Provocateur</ulink>: Lingerie
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <ulink url="http://www.perfect-coffee.com/">Perfect Coffee</ulink>: Coffee
+      </para>
+    </listitem>
+  </itemizedlist>
+  <para>
+    If you are using Proxool then let us know in this forum.
+  </para>
 
-</webpage>
+</article>
