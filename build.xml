@@ -16,6 +16,7 @@
 
   <property name="docbook.dtd.version" value="4.2"/>
   <property name="docbook.xsl.version" value="1.60.1"/>
+  <property name="website.version" value="2.5.0"/>
 
   <xmlcatalog id="docbook">
     <dtd publicId="-//OASIS//DTD DocBook XML V${docbook.dtd.version}//EN"
@@ -26,7 +27,9 @@
 
   <!-- ======================== Target: Prepare ========================= -->
 
-  <target name="prepare"
+  <target name="prepare"/>
+
+  <target name="sprepare"
           description="Prepares the project build environment.">
 
     <!-- Make the build directory -->
@@ -38,6 +41,10 @@
 
     <unzip src="${lib.home}/docbook-xsl-${docbook.xsl.version}.zip"
            dest="${build.home}"/>
+
+    <unzip src="${lib.home}/website-${website.version}.zip"
+      dest="${build.home}"/>
+
   </target>
 
   <!-- ======================== Target: Clean =========================== -->
@@ -54,6 +61,37 @@
           description="Generates all documentation formats.">
 
 
+  </target>
+
+  <target name="generate.website-autolayout"
+      description="Generates the autolayout file used in the Website generation"
+    >
+    <xslt basedir="${src.docs}"
+          in="${src.docs}/layout.xml"
+          out="${build.home}/website-xsl/autolayout.xml"
+          style="${build.home}/website-${website.version}/xsl/autolayout.xsl">
+          <xmlcatalog refid="docbook"/>
+    </xslt>
+    <copy todir="${build.home}/website-xsl">
+      <fileset dir="${src.docs}">
+        <include name="**/*.xml"/>
+      </fileset>
+    </copy>
+
+  </target>
+
+  <target name="generate.website" depends="generate.website-autolayout"
+      description="Generates the HTML website using the Website Tabular style"
+      >
+    <xslt
+        basedir="${build.home}/website-xsl"
+        style="${build.home}/website-${website.version}/xsl/tabular.xsl"
+        excludes="autolayout.xml"
+        destdir="${build.home}/website/html"
+        extension=".html"
+        followsymlinks="false"
+      >
+    </xslt>
   </target>
 
   <!-- ======================== Target: Generate ======================== -->
